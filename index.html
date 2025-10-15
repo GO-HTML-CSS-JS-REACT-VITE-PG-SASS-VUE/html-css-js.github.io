@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <body>
-    <h1 id="title">Старый заголовок</h1>
-    <button onclick="changeText()">Изменить текст</button>
+    <div id="colorBox" style="width: 100px; height: 100px; background: red;"></div>
+    <button onclick="changeColor()">Сменить цвет</button>
 
     <script>
-        function changeText() {
-            document.getElementById('title').textContent = 'Новый заголовок!';
+        function changeColor() {
+            document.getElementById('colorBox').style.background = 'blue';
         }
     </script>
 </body>
 </html>
-<!-- Пояснение: - getElementById() находит элемент по id - textContent изменяет текстовое содержимое - onclick вызывает функцию при клике - Простейшее изменение DOM элемента -->
+<!-- Пояснение: - style.background изменяет CSS свойство - Инлайн стили для быстрой демонстрации - Переключение между двумя цветами -->
