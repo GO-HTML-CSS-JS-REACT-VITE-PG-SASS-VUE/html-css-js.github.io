@@ -1,14 +1,319 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <title>3D Cube with Interactive Controls</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .scene {
+            width: 300px;
+            height: 300px;
+            margin: 40px auto;
+            perspective: 1000px;
+        }
+        
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+        
+        .face {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .front {
+            transform: translateZ(150px);
+            background: rgba(255, 0, 0, 0.7);
+        }
+        
+        .back {
+            transform: rotateY(180deg) translateZ(150px);
+            background: rgba(0, 255, 0, 0.7);
+        }
+        
+        .right {
+            transform: rotateY(90deg) translateZ(150px);
+            background: rgba(0, 0, 255, 0.7);
+        }
+        
+        .left {
+            transform: rotateY(-90deg) translateZ(150px);
+            background: rgba(255, 255, 0, 0.7);
+        }
+        
+        .top {
+            transform: rotateX(90deg) translateZ(150px);
+            background: rgba(255, 0, 255, 0.7);
+        }
+        
+        .bottom {
+            transform: rotateX(-90deg) translateZ(150px);
+            background: rgba(0, 255, 255, 0.7);
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            max-width: 600px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .slider-container {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .slider-container label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        input[type="range"] {
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        .info {
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 600px;
+            text-align: left;
+        }
+        
+        .info h3 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
 <body>
-    <div id="colorBox" style="width: 100px; height: 100px; background: red;"></div>
-    <button onclick="changeColor()">Сменить цвет</button>
+    <div class="container">
+        <h1>3D Cube with Interactive Controls</h1>
+        
+        <div class="scene">
+            <div class="cube" id="cube">
+                <div class="face front">Front</div>
+                <div class="face back">Back</div>
+                <div class="face right">Right</div>
+                <div class="face left">Left</div>
+                <div class="face top">Top</div>
+                <div class="face bottom">Bottom</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="rotateX">Rotate X</button>
+            <button id="rotateY">Rotate Y</button>
+            <button id="rotateZ">Rotate Z</button>
+            <button id="rotateXY">Rotate XY</button>
+            <button id="rotateXYZ">Rotate XYZ</button>
+            <button id="reset">Reset</button>
+        </div>
+        
+        <div class="slider-container">
+            <label for="perspective">Perspective: <span id="perspectiveValue">1000</span>px</label>
+            <input type="range" id="perspective" min="500" max="2000" value="1000">
+        </div>
+        
+        <div class="slider-container">
+            <label for="size">Cube Size: <span id="sizeValue">300</span>px</label>
+            <input type="range" id="size" min="150" max="400" value="300">
+        </div>
+        
+        <div class="info">
+            <h3>Информация о проекте</h3>
+            <p>Этот проект демонстрирует работу с 3D трансформациями в CSS и управление ими через JavaScript.</p>
+            <p>Используемые технологии:</p>
+            <ul>
+                <li><strong>CSS 3D Transforms:</strong> transform-style: preserve-3d, perspective, rotateX, rotateY, rotateZ, translateZ</li>
+                <li><strong>JavaScript DOM Manipulation:</strong> Изменение CSS свойств через JS, обработка событий</li>
+                <li><strong>CSS Variables:</strong> Динамическое изменение размера куба и перспективы</li>
+            </ul>
+        </div>
+    </div>
 
     <script>
-        function changeColor() {
-            document.getElementById('colorBox').style.background = 'blue';
+        // Получаем элементы DOM
+        const cube = document.getElementById('cube');
+        const perspectiveSlider = document.getElementById('perspective');
+        const perspectiveValue = document.getElementById('perspectiveValue');
+        const sizeSlider = document.getElementById('size');
+        const sizeValue = document.getElementById('sizeValue');
+        const scene = document.querySelector('.scene');
+        
+        // Начальное состояние куба
+        let rotation = {
+            x: 0,
+            y: 0,
+            z: 0
+        };
+        
+        // Функция для применения трансформации к кубу
+        function applyRotation() {
+            cube.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`;
         }
+        
+        // Обработчики для кнопок вращения
+        document.getElementById('rotateX').addEventListener('click', () => {
+            rotation.x += 90;
+            applyRotation();
+        });
+        
+        document.getElementById('rotateY').addEventListener('click', () => {
+            rotation.y += 90;
+            applyRotation();
+        });
+        
+        document.getElementById('rotateZ').addEventListener('click', () => {
+            rotation.z += 90;
+            applyRotation();
+        });
+        
+        document.getElementById('rotateXY').addEventListener('click', () => {
+            rotation.x += 45;
+            rotation.y += 45;
+            applyRotation();
+        });
+        
+        document.getElementById('rotateXYZ').addEventListener('click', () => {
+            rotation.x += 30;
+            rotation.y += 30;
+            rotation.z += 30;
+            applyRotation();
+        });
+        
+        document.getElementById('reset').addEventListener('click', () => {
+            rotation.x = 0;
+            rotation.y = 0;
+            rotation.z = 0;
+            applyRotation();
+        });
+        
+        // Обработчик для изменения перспективы
+        perspectiveSlider.addEventListener('input', () => {
+            const value = perspectiveSlider.value;
+            perspectiveValue.textContent = value;
+            scene.style.perspective = `${value}px`;
+        });
+        
+        // Обработчик для изменения размера куба
+        sizeSlider.addEventListener('input', () => {
+            const value = sizeSlider.value;
+            sizeValue.textContent = value;
+            
+            // Изменяем размер куба и его граней через CSS переменные
+            document.documentElement.style.setProperty('--cube-size', `${value}px`);
+            
+            // Обновляем размер сцены
+            scene.style.width = `${value}px`;
+            scene.style.height = `${value}px`;
+            
+            // Обновляем размеры граней
+            const faces = document.querySelectorAll('.face');
+            faces.forEach(face => {
+                face.style.width = `${value}px`;
+                face.style.height = `${value}px`;
+                face.style.transform = face.style.transform.replace(/translateZ\(\d+px\)/, `translateZ(${value/2}px)`);
+            });
+        });
+        
+        // Инициализация CSS переменных
+        document.documentElement.style.setProperty('--cube-size', '300px');
     </script>
 </body>
 </html>
-<!-- Пояснение: - style.background изменяет CSS свойство - Инлайн стили для быстрой демонстрации - Переключение между двумя цветами -->
+<!-- 
+Пояснение:
+Проект демонстрирует создание интерактивного 3D куба с использованием CSS 3D трансформаций и управления ими через JavaScript.
+
+Основные элементы:
+1. 3D сцена с перспективой (perspective)
+2. Куб с шестью гранями, позиционированными в 3D пространстве
+3. Интерактивные элементы управления для вращения куба
+4. Слайдеры для изменения перспективы и размера куба
+
+Использованные CSS свойства:
+- transform-style: preserve-3d - сохраняет 3D пространство для дочерних элементов
+- perspective - создает точку обзора для 3D сцены
+- rotateX, rotateY, rotateZ - вращение по осям
+- translateZ - перемещение по оси Z для создания граней куба
+
+JavaScript функциональность:
+- Динамическое изменение CSS свойств transform для вращения куба
+- Обработка событий клика для кнопок управления
+- Реализация слайдеров для изменения перспективы и размера
+- Использование CSS переменных для динамического изменения размеров
+
+Практическое применение:
+- Создание 3D визуализаций
+- Интерактивные презентации продуктов
+- Образовательные материалы по 3D геометрии
+- Игровые интерфейсы
+-->
