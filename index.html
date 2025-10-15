@@ -1,13 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проект 1 - Изменение текста</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        h1 {
+            color: #333;
+            transition: color 0.3s;
+        }
+        .changed {
+            color: #e74c3c;
+        }
+    </style>
+</head>
 <body>
     <h1 id="title">Старый заголовок</h1>
     <button onclick="changeText()">Изменить текст</button>
+    <button onclick="resetText()">Сбросить</button>
 
     <script>
         function changeText() {
-            document.getElementById('title').textContent = 'Новый заголовок!';
+            const title = document.getElementById('title');
+            title.textContent = 'Новый заголовок!';
+            title.classList.add('changed');
         }
+        
+        function resetText() {
+            const title = document.getElementById('title');
+            title.textContent = 'Старый заголовок';
+            title.classList.remove('changed');
+        }
+        
+        console.log('Скрипт загружен успешно!');
     </script>
 </body>
 </html>
